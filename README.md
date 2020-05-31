@@ -39,3 +39,5 @@ Tool to track dependncies of software-projects
 ## Non-goals
 - https://dependencytrack.org/
 
+## See also
+- https://github.com/wagoodman/dive
