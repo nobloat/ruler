@@ -37,6 +37,8 @@ Tool to track dependncies of software-projects
 - Automated tooling to retrieve these metrics
 - Visualize the results for some open-source projects
 - Easy to use and integrate into existing projects
+- Badges for size metrics
+- simple-go binary instead of bash script that calls docker history to export layer sizes + does line counting for the actual code.
 
 ## Non-goals
 - https://dependencytrack.org/
