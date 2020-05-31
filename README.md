@@ -18,3 +18,10 @@ Tool to track dependncies of software-projects
 
 ### Implicit-dependencies
 - e.g. operating system, are currently out of the scope of this project.
+
+## Goal
+- The tool should be able to analyze package requirements and extract metrics for each programming-language
+  - npm -> `package.json`
+  - maven -> `pom.xml`
+  - go-mod -> `go.mod`
+  - Docker -> `Dockerfile` to count layer sizes
