@@ -4,20 +4,18 @@
 Tool to track dependncies of software-projects
 
 ## Metrics 
-- Lines of code
+- **Lines of source** and **Number of files** per category
   - Test
   - Examples
   - Functionality
-  - Runtime dependendencies
-- Number of files
-  - Test
-  - Examples
-  - Functionality
-  - Runtime dependencies
 - Resulting optimized binary size of the functionality including runtime-dependencies
-- Total install-size of dev-dependencies in Bytes (may vary on each OS, suggestion to use alpine-linux as base)
-- Total install-size of external-dependencies
+- Total install-size of dev-dependencies in Bytes (on top of alpine-linux docker image) -> Pushed to docker registry
+- Total install-size of external-dependencies -> Use docker image size if available
 - Number of service dependencies (size cannot be calculated)
+
+- Add file to repo -> Dockerfile.ruler
+- Use resulting docker image sizes for dev-dependencies and total optimized binary size with runtime
+- Cound lines of code / source lines based on three categories via simple tool
 
 ## Dependency types
 ### Dev-dependencies
@@ -36,12 +34,13 @@ Tool to track dependncies of software-projects
 - Manuals / best-practices to cont. measure and track the above mentioned metrics
 - Automated tooling to retrieve these metrics
 - Visualize the results for some open-source projects
-- Easy to use and integrate into existing projects
-- Badges for size metrics
+- Easy to use and integrate into existing projects -> Badges based on github repo urls
 - simple-go binary instead of bash script that calls docker history to export layer sizes + does line counting for the actual code.
 
 ## Non-goals
 - https://dependencytrack.org/
+- Building the docker images on separte infrastructure -> use what is already there.
 
 ## See also
 - https://github.com/wagoodman/dive
+- https://github.com/XAMPPRocky/tokei_rs Lines of Code badge
