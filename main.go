@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -15,7 +16,7 @@ import (
 type config map[string][]string
 
 func readConfig() (*config, error) {
-	file, err := os.Open(".ruler.cfg") // For read access.
+	file, err := os.Open(".ruler.cfg")
 	if err != nil {
 		return nil, errors.New("Config file .ruler.cfg not found")
 	}
@@ -59,9 +60,10 @@ func match(pattern, name string) bool {
 	return pattern == name
 }
 
+var Order = [...]string{"test", "example", "doc", "func", "config"}
+
 func categorizeFile(path string, c config) string {
-	order := []string{"test", "example", "doc", "source", "config"}
-	for _, key := range order {
+	for _, key := range Order {
 		if patterns, ok := c[key]; ok {
 			for _, pattern := range patterns {
 				if match(pattern, path) {
@@ -81,6 +83,7 @@ func countLines(path string) (int, error) {
 	for {
 		c, err := file.Read(buf)
 		count += bytes.Count(buf[:c], lineSep)
+		//TODO: Proper binary file detection
 		if count > 1024 {
 			return 0, nil
 		}
@@ -94,12 +97,20 @@ func countLines(path string) (int, error) {
 }
 
 func main() {
+	args := os.Args
+	verbose := false
+	if len(args) > 1 {
+		if args[1] == "--verbose" {
+			verbose = true
+		}
+	}
+
 	c, err := readConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	lines := map[string]int64{}
+	lines := map[string]int{}
 	bytes := map[string]int64{}
 
 	err = filepath.Walk(".",
@@ -108,12 +119,19 @@ func main() {
 				panic(err)
 			}
 			if info.IsDir() && skip(path) {
+				if verbose {
+					log.Print("Ignoring " + path)
+				}
 				return filepath.SkipDir
 			} else if !info.IsDir() {
 				category := categorizeFile(path, *c)
 				l, _ := countLines(path)
-				lines[category] += int64(l)
+				lines[category] += l
 				bytes[category] += info.Size()
+
+				if verbose {
+					fmt.Println("[" + category + "] " + path + "\t" + strconv.Itoa(l) + " lines\t" + strconv.Itoa(int(info.Size())) + " bytes")
+				}
 			}
 			return nil
 		})
@@ -122,6 +140,20 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println(lines)
-	fmt.Println(bytes)
+	printReport(lines, bytes)
+}
+
+func printReport(lines map[string]int, bytes map[string]int64) {
+	fmt.Println("RULER-LINES-DOC: " + strconv.Itoa(lines["doc"]))
+	fmt.Println("RULER-BYTES-DOC: " + strconv.Itoa(int(bytes["doc"])))
+	fmt.Println("RULER-LINES-FUNC: " + strconv.Itoa(lines["func"]))
+	fmt.Println("RULER-BYTES-FUNC: " + strconv.Itoa(int(bytes["func"])))
+	fmt.Println("RULER-LINES-CONFIG: " + strconv.Itoa(lines["config"]))
+	fmt.Println("RULER-BYTES-CONFIG: " + strconv.Itoa(int(bytes["config"])))
+	fmt.Println("RULER-LINES-TEST: " + strconv.Itoa(lines["test"]))
+	fmt.Println("RULER-BYTES-TEST: " + strconv.Itoa(int(bytes["test"])))
+	fmt.Println("RULER-LINES-EXAMPLE: " + strconv.Itoa(lines["example"]))
+	fmt.Println("RULER-BYTES-EXAMPLE: " + strconv.Itoa(int(bytes["example"])))
+	fmt.Println("RULER-LINES-OTHER: " + strconv.Itoa(lines["other"]))
+	fmt.Println("RULER-BYTES-OTHER: " + strconv.Itoa(int(bytes["other"])))
 }
