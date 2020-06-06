@@ -40,6 +40,7 @@ func readConfig() (*config, error) {
 		}
 		i++
 	}
+	result["cfg"] = append(result["cfg"], ".ruler.cfg", ".gitignore")
 	return &result, nil
 }
 
@@ -60,7 +61,7 @@ func match(pattern, name string) bool {
 	return pattern == name
 }
 
-var Order = [...]string{"test", "example", "doc", "func", "config"}
+var Order = [...]string{"test", "example", "doc", "func", "cfg", "res"}
 
 func categorizeFile(path string, c config) string {
 	for _, key := range Order {
@@ -148,8 +149,8 @@ func printReport(lines map[string]int, bytes map[string]int64) {
 	fmt.Println("RULER-BYTES-DOC: " + strconv.Itoa(int(bytes["doc"])))
 	fmt.Println("RULER-LINES-FUNC: " + strconv.Itoa(lines["func"]))
 	fmt.Println("RULER-BYTES-FUNC: " + strconv.Itoa(int(bytes["func"])))
-	fmt.Println("RULER-LINES-CONFIG: " + strconv.Itoa(lines["config"]))
-	fmt.Println("RULER-BYTES-CONFIG: " + strconv.Itoa(int(bytes["config"])))
+	fmt.Println("RULER-LINES-CFG: " + strconv.Itoa(lines["cfg"]))
+	fmt.Println("RULER-BYTES-CFG: " + strconv.Itoa(int(bytes["cfg"])))
 	fmt.Println("RULER-LINES-TEST: " + strconv.Itoa(lines["test"]))
 	fmt.Println("RULER-BYTES-TEST: " + strconv.Itoa(int(bytes["test"])))
 	fmt.Println("RULER-LINES-EXAMPLE: " + strconv.Itoa(lines["example"]))
